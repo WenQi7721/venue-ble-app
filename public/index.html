@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BLE Advertise and Scan</title>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <h1>BLE Advertise and Scan</h1>
+    <button id="start-advertising">Start Advertising</button>
+    <button id="start-scanning">Start Scanning</button>
+    <div id="status"></div>
+    <div id="discovered-peripherals"></div>
+    <script>
+      const socket = io();
+
+      socket.on("blenoStateChange", (state) => {
+        document.getElementById("status").innerHTML = `Bleno State: ${state}`;
+      });
+
+      socket.on("advertisingStarted", () => {
+        document.getElementById("status").innerHTML +=
+          "<br>Advertising started successfully";
+      });
+
+      socket.on("advertisingStartError", (error) => {
+        document.getElementById(
+          "status"
+        ).innerHTML += `<br>Advertising start error: ${error}`;
+      });
+
+      socket.on("setServicesError", (error) => {
+        document.getElementById(
+          "status"
+        ).innerHTML += `<br>Set services error: ${error}`;
+      });
+
+      socket.on("clientConnected", (clientAddress) => {
+        document.getElementById(
+          "status"
+        ).innerHTML += `<br>Client connected: ${clientAddress}`;
+      });
+
+      socket.on("clientDisconnected", (clientAddress) => {
+        document.getElementById(
+          "status"
+        ).innerHTML += `<br>Client disconnected: ${clientAddress}`;
+      });
+
+      socket.on("nobleStateChange", (state) => {
+        document.getElementById(
+          "status"
+        ).innerHTML += `<br>Noble State: ${state}`;
+      });
+
+      socket.on("peripheralDiscovered", (peripheral) => {
+        document.getElementById(
+          "discovered-peripherals"
+        ).innerHTML += `<br>Peripheral discovered: ${peripheral.localName} (${peripheral.uuid})`;
+      });
+
+      document
+        .getElementById("start-advertising")
+        .addEventListener("click", () => {
+          socket.emit("startAdvertising");
+        });
+
+      document
+        .getElementById("start-scanning")
+        .addEventListener("click", () => {
+          socket.emit("startScanning");
+        });
+    </script>
+  </body>
+</html>
