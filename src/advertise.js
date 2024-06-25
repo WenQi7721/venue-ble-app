@@ -38,7 +38,23 @@ const startAdvertising = (io) => {
         console.log(`State changed: ${state}`);
         io.emit('blenoStateChange', state);
         if (state === 'poweredOn') {
-            bleno.startAdvertising(deviceName, [primaryServiceUUID]);
+            const manufacturerData = Buffer.from('01020304', 'hex');
+            bleno.startAdvertising(deviceName, [primaryServiceUUID], (error) => {
+                if (error) {
+                    console.error(`Advertising start error: ${error}`);
+                } else {
+                    console.log('Advertising started successfully');
+                    bleno.setServices([myPrimaryService], (err) => {
+                        if (err) {
+                            console.error(`Set services error: ${err}`);
+                        } else {
+                            console.log('Services set successfully');
+                            io.emit('advertisingStarted');
+                            bleno.updateRssi();
+                        }
+                    });
+                }
+            }, manufacturerData);
         } else {
             bleno.stopAdvertising();
         }
@@ -50,15 +66,6 @@ const startAdvertising = (io) => {
             io.emit('advertisingStartError', error);
         } else {
             console.log('Advertising started successfully');
-            bleno.setServices([myPrimaryService], (err) => {
-                if (err) {
-                    console.error(`Set services error: ${err}`);
-                    io.emit('setServicesError', err);
-                } else {
-                    console.log('Services set successfully');
-                    io.emit('advertisingStarted');
-                }
-            });
         }
     });
 

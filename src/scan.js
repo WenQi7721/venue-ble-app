@@ -4,7 +4,7 @@ const { createObjectCsvWriter } = require('csv-writer');
 
 // Create CSV writer
 const csvWriter = createObjectCsvWriter({
-    path: 'peripherals.csv',
+    path: 'tickets.csv',
     header: [
         {id: 'localName', title: 'Local Name'},
         {id: 'uuid', title: 'UUID'},
@@ -33,9 +33,9 @@ const startScanning = (socket) => {
         if (localName === 'TestPeripheral') {
             // Check for duplicates using the UUID
             if (!peripheralsData.has(peripheral.uuid)) {
-                console.log(`Peripheral discovered: ${localName} (${peripheral.uuid})`);
-                console.log(`Manufacturer Data: ${manufacturerData}`);
-                console.log(`RSSI: ${rssi}`);
+                console.log('Peripheral discovered: ${localName} (${peripheral.uuid})');
+                console.log('Manufacturer Data: ${manufacturerData}');
+                console.log('RSSI: ${rssi}');
                 
                 socket.emit('peripheralDiscovered', {
                     localName: localName,
