@@ -33,12 +33,12 @@ const myPrimaryService = new PrimaryService({
     characteristics: [myCharacteristic]
 });
 
-const startAdvertising = (io) => {
+// Function to start advertising for a specific duration
+const startAdvertising = (io, manufacturerData, duration) => {
     bleno.on('stateChange', (state) => {
         console.log(`State changed: ${state}`);
         io.emit('blenoStateChange', state);
         if (state === 'poweredOn') {
-            const manufacturerData = Buffer.from('01020304', 'hex');
             bleno.startAdvertising(deviceName, [primaryServiceUUID], (error) => {
                 if (error) {
                     console.error(`Advertising start error: ${error}`);
@@ -51,6 +51,11 @@ const startAdvertising = (io) => {
                             console.log('Services set successfully');
                             io.emit('advertisingStarted');
                             bleno.updateRssi();
+                            setTimeout(() => {
+                                bleno.stopAdvertising(() => {
+                                    console.log('Advertising stopped after duration');
+                                });
+                            }, duration);
                         }
                     });
                 }
