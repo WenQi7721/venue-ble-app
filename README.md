@@ -15,8 +15,6 @@ This project is a BLE (Bluetooth Low Energy) application using Bleno and Noble.
    npm init -y
    ```
 
-````
-
 2. **Install and use the latest Node.js version**
 
    ```bash
@@ -57,4 +55,3 @@ This project is a BLE (Bluetooth Low Energy) application using Bleno and Noble.
    ```bash
    node src/app.js
    ```
-````
