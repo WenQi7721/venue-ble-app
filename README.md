@@ -1,4 +1,3 @@
-````markdown
 # Venue BLE App
 
 This project is a BLE (Bluetooth Low Energy) application using Bleno and Noble.
@@ -15,6 +14,7 @@ This project is a BLE (Bluetooth Low Energy) application using Bleno and Noble.
    ```bash
    npm init -y
    ```
+
 ````
 
 2. **Install and use the latest Node.js version**
@@ -57,3 +57,4 @@ This project is a BLE (Bluetooth Low Energy) application using Bleno and Noble.
    ```bash
    node src/app.js
    ```
+````
