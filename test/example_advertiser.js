@@ -2,18 +2,11 @@ const startAdvertising = require('../src/advertise');
 
 const advertisements = [
     { 
-        deviceName: 'Device1', 
-        primaryServiceUUID: 'fffffffffffffffffffffffffffffff2', 
-        characteristicUUID: 'fffffffffffffffffffffffffffffff1', 
-        manufacturerData: "4c001006391eb6b52fdb01", 
+        deviceName: 'Device2', 
+        primaryServiceUUID: 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0', 
+        characteristicUUID: 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1', 
+        manufacturerData: "001006391eb6b0001", 
         duration: 30000 // 30 seconds for testing
-    },
-    { 
-        deviceName: 'Device3', 
-        primaryServiceUUID: 'ddddddddddddddddddddddddddddddd0', 
-        characteristicUUID: 'ddddddddddddddddddddddddddddddd1', 
-        manufacturerData: "04636601006391eb6b01", 
-        duration: 10000 // 30 seconds for testing
     }
 ];
 

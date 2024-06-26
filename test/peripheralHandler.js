@@ -65,14 +65,14 @@ const startAdvertising = (config, callback) => {
 const configurations = [
     { 
         deviceName: 'Device1', 
-        primaryServiceUUID: 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0', 
+        primaryServiceUUID: 'fffffffffffffffffffffffffffffff2', 
         characteristicUUID: 'fffffffffffffffffffffffffffffff1', 
         manufacturerData: "4c001006391eb6b52fdb01", 
         duration: 10000 // 10 seconds for testing
     },
     { 
         deviceName: 'Device2', 
-        primaryServiceUUID: 'fffffffffffffffffffffffffffffff2', 
+        primaryServiceUUID: 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0', 
         characteristicUUID: 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1', 
         manufacturerData: "001006391eb6b0001", 
         duration: 10000 // 10 seconds for testing
@@ -95,12 +95,14 @@ const runNextConfiguration = () => {
                 console.error(`Failed to start advertising: ${error}`);
             } else {
                 console.log(`Advertising finished successfully for ${configurations[currentIndex].deviceName}`);
-                currentIndex = (currentIndex + 1) % configurations.length;
-                setTimeout(runNextConfiguration, 2000); // Add a delay of 2 seconds before starting the next one
+                currentIndex++;
+                if (currentIndex < configurations.length) {
+                    setTimeout(runNextConfiguration, 2000); // Add a delay of 2 seconds before starting the next one
+                } else {
+                    console.log('All configurations have been processed.');
+                }
             }
         });
-    } else {
-        console.log('All configurations have been processed.');
     }
 };
 

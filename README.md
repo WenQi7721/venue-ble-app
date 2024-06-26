@@ -48,6 +48,12 @@ This project is a BLE (Bluetooth Low Energy) application using Bleno and Noble.
      npm install socket.io
      ```
 
+   - **CSV access**
+
+     ```bash
+     npm install csv-parser
+     ```
+
 ## Running the Application
 
 1. **Start the server**
