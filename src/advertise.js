@@ -1,6 +1,6 @@
 const bleno = require('@abandonware/bleno');
 
-const deviceName = 'Yes';
+const deviceName = 'Result';
 
 // Function to create characteristics based on payload
 function createCharacteristic(uuid, payload) {
