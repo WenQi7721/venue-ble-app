@@ -1,7 +1,5 @@
 const bleno = require('@abandonware/bleno');
 
-const deviceName = 'Result';
-
 // Function to create characteristics based on payload
 function createCharacteristic(uuid, payload) {
     return new bleno.Characteristic({
@@ -20,15 +18,11 @@ function createCharacteristic(uuid, payload) {
 }
 
 // Function to start advertising for a specific duration with dynamic characteristics
-const startAdvertising = (manufacturerData, duration) => {
-    bleno.on('stateChange', (state) => {
+const startAdvertising = (deviceName, primaryServiceUUID, characteristicUUID, manufacturerData, duration, callback) => {
+    const handleStateChange = (state) => {
         console.log(`State changed: ${state}`);
 
         if (state === 'poweredOn') {
-            // Setup primary service UUID and characteristic based on manufacturerData
-            const primaryServiceUUID = 'fffffffffffffffffffffffffffffff0'; // Could be dynamic based on use case
-            const characteristicUUID = 'fffffffffffffffffffffffffffffff1'; // Could be dynamic based on use case
-
             const myCharacteristic = createCharacteristic(characteristicUUID, manufacturerData.toString());
             const myPrimaryService = new bleno.PrimaryService({
                 uuid: primaryServiceUUID,
@@ -38,18 +32,20 @@ const startAdvertising = (manufacturerData, duration) => {
             bleno.startAdvertising(deviceName, [primaryServiceUUID], (error) => {
                 if (error) {
                     console.error(`Advertising start error: ${error}`);
+                    callback(error);
                 } else {
                     console.log('Advertising started successfully');
-                    // Set the BLE services with the dynamic characteristics
                     bleno.setServices([myPrimaryService], (err) => {
                         if (err) {
                             console.error(`Set services error: ${err}`);
+                            callback(err);
                         } else {
                             console.log('Services set successfully');
-                            // Automatically stop advertising after the specified duration
                             setTimeout(() => {
                                 bleno.stopAdvertising(() => {
                                     console.log('Advertising stopped after duration');
+                                    bleno.removeListener('stateChange', handleStateChange);
+                                    callback(null);
                                 });
                             }, duration);
                         }
@@ -57,25 +53,13 @@ const startAdvertising = (manufacturerData, duration) => {
                 }
             });
         } else {
-            bleno.stopAdvertising();
+            bleno.stopAdvertising(() => {
+                bleno.removeListener('stateChange', handleStateChange);
+            });
         }
-    });
+    };
 
-    bleno.on('advertisingStart', (error) => {
-        if (error) {
-            console.error(`Advertising start error: ${error}`);
-        } else {
-            console.log('Advertising started successfully');
-        }
-    });
-
-    bleno.on('accept', (clientAddress) => {
-        console.log(`Client connected: ${clientAddress}`);
-    });
-
-    bleno.on('disconnect', (clientAddress) => {
-        console.log(`Client disconnected: ${clientAddress}`);
-    });
+    bleno.on('stateChange', handleStateChange);
 };
 
 module.exports = startAdvertising;
