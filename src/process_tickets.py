@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 
 
 def process_ticket(data):
@@ -13,10 +14,10 @@ def process_csv(file_path):
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
             data = {
-                'localName': row['Local Name'],
-                'uuid': row['UUID'],
-                'manufacturerData': row['Manufacturer Data'],
-                'rssi': row['RSSI']
+                'Local Name': row['Local Name'],
+                'UUID': row['UUID'],
+                'Manufacturer Data': row['Manufacturer Data'],
+                'RSSI': row['RSSI']
             }
             is_valid = process_ticket(data)
             data['is_valid'] = is_valid
@@ -34,8 +35,10 @@ def write_processed_csv(file_path, processed_data):
 
 
 if __name__ == "__main__":
-    input_file_path = 'tickets.csv'
-    output_file_path = 'processed_tickets.csv'
+    base_dir = os.path.dirname(os.path.dirname(
+        __file__))
+    input_file_path = os.path.join(base_dir, 'tickets.csv')
+    output_file_path = os.path.join(base_dir, 'processed_tickets.csv')
     processed_data = process_csv(input_file_path)
     write_processed_csv(output_file_path, processed_data)
     print(json.dumps(processed_data))

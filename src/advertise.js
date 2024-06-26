@@ -2,7 +2,7 @@ const bleno = require('@abandonware/bleno');
 
 const primaryServiceUUID = 'fffffffffffffffffffffffffffffff0';
 const characteristicUUID = 'fffffffffffffffffffffffffffffff1';
-const deviceName = 'Yes';
+const deviceName = 'Result';
 
 const { Characteristic, PrimaryService } = bleno;
 
