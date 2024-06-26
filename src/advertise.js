@@ -1,56 +1,52 @@
 const bleno = require('@abandonware/bleno');
 
-const primaryServiceUUID = 'fffffffffffffffffffffffffffffff0';
-const characteristicUUID = 'fffffffffffffffffffffffffffffff1';
-const deviceName = 'Result';
+const deviceName = 'Yes';
 
-const { Characteristic, PrimaryService } = bleno;
-
-class MyCharacteristic extends Characteristic {
-    constructor() {
-        super({
-            uuid: characteristicUUID,
-            properties: ['read', 'write'],
-        });
-    }
-
-    onReadRequest(offset, callback) {
-        console.log('Read request received');
-        const data = Buffer.from('Hello World');
-        callback(this.RESULT_SUCCESS, data);
-    }
-
-    onWriteRequest(data, offset, withoutResponse, callback) {
-        console.log(`Write request received: ${data.toString()}`);
-        callback(this.RESULT_SUCCESS);
-    }
+// Function to create characteristics based on payload
+function createCharacteristic(uuid, payload) {
+    return new bleno.Characteristic({
+        uuid: uuid,
+        properties: ['read', 'write'],
+        onReadRequest: function (offset, callback) {
+            console.log('Read request received');
+            const data = Buffer.from(payload);
+            callback(this.RESULT_SUCCESS, data);
+        },
+        onWriteRequest: function (data, offset, withoutResponse, callback) {
+            console.log(`Write request received: ${data.toString()}`);
+            callback(this.RESULT_SUCCESS);
+        }
+    });
 }
 
-const myCharacteristic = new MyCharacteristic();
-
-const myPrimaryService = new PrimaryService({
-    uuid: primaryServiceUUID,
-    characteristics: [myCharacteristic]
-});
-
-// Function to start advertising for a specific duration
-const startAdvertising = (io, manufacturerData, duration) => {
+// Function to start advertising for a specific duration with dynamic characteristics
+const startAdvertising = (manufacturerData, duration) => {
     bleno.on('stateChange', (state) => {
         console.log(`State changed: ${state}`);
-        io.emit('blenoStateChange', state);
+
         if (state === 'poweredOn') {
+            // Setup primary service UUID and characteristic based on manufacturerData
+            const primaryServiceUUID = 'fffffffffffffffffffffffffffffff0'; // Could be dynamic based on use case
+            const characteristicUUID = 'fffffffffffffffffffffffffffffff1'; // Could be dynamic based on use case
+
+            const myCharacteristic = createCharacteristic(characteristicUUID, manufacturerData.toString());
+            const myPrimaryService = new bleno.PrimaryService({
+                uuid: primaryServiceUUID,
+                characteristics: [myCharacteristic]
+            });
+
             bleno.startAdvertising(deviceName, [primaryServiceUUID], (error) => {
                 if (error) {
                     console.error(`Advertising start error: ${error}`);
                 } else {
                     console.log('Advertising started successfully');
+                    // Set the BLE services with the dynamic characteristics
                     bleno.setServices([myPrimaryService], (err) => {
                         if (err) {
                             console.error(`Set services error: ${err}`);
                         } else {
                             console.log('Services set successfully');
-                            io.emit('advertisingStarted');
-                            bleno.updateRssi();
+                            // Automatically stop advertising after the specified duration
                             setTimeout(() => {
                                 bleno.stopAdvertising(() => {
                                     console.log('Advertising stopped after duration');
@@ -59,7 +55,7 @@ const startAdvertising = (io, manufacturerData, duration) => {
                         }
                     });
                 }
-            }, manufacturerData);
+            });
         } else {
             bleno.stopAdvertising();
         }
@@ -68,7 +64,6 @@ const startAdvertising = (io, manufacturerData, duration) => {
     bleno.on('advertisingStart', (error) => {
         if (error) {
             console.error(`Advertising start error: ${error}`);
-            io.emit('advertisingStartError', error);
         } else {
             console.log('Advertising started successfully');
         }
@@ -76,12 +71,10 @@ const startAdvertising = (io, manufacturerData, duration) => {
 
     bleno.on('accept', (clientAddress) => {
         console.log(`Client connected: ${clientAddress}`);
-        io.emit('clientConnected', clientAddress);
     });
 
     bleno.on('disconnect', (clientAddress) => {
         console.log(`Client disconnected: ${clientAddress}`);
-        io.emit('clientDisconnected', clientAddress);
     });
 };
 

@@ -3,8 +3,6 @@ const http = require('http');
 const socketIo = require('socket.io');
 const { exec } = require('child_process');
 const path = require('path');
-const startAdvertising = require('./src/advertise');
-const startScanning = require('./src/scan');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,30 +17,39 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('Client connected');
-    socket.on('startAdvertising', () => startAdvertising(io));
-    socket.on('startScanning', () => startScanning(io));
     socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
-// Function to execute Python scripts
-function runPythonScript(scriptFilename) {
+function runPythonScript(scriptFilename, callback) {
     const scriptPath = path.join(__dirname, 'src', scriptFilename);
     exec(`python3 ${scriptPath}`, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error executing ${scriptFilename}: ${error.message}`);
-            return;
+            return callback(error);
         }
         if (stderr) {
             console.error(`${scriptFilename} stderr: ${stderr}`);
-            return;
+            return callback(stderr);
         }
         console.log(`${scriptFilename} output: ${stdout}`);
+        callback(null, stdout);
     });
 }
 
 // Start running Python scripts as soon as the server starts
-runPythonScript('process_tickets.py');
-runPythonScript('advertising_monitor.py');
+runPythonScript('process_tickets.py', (err, output) => {
+    if (!err) {
+        console.log('process_tickets.py successfully executed. Output:');
+        console.log(output);
+    }
+});
+
+runPythonScript('advertising_monitor.py', (err, output) => {
+    if (!err) {
+        console.log('advertising_monitor.py successfully executed. Output:');
+        console.log(output);
+    }
+});
 
 server.listen(3000, () => {
     console.log('Server is running on port 3000');

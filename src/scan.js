@@ -30,7 +30,7 @@ const startScanning = (socket) => {
         const manufacturerData = peripheral.advertisement.manufacturerData ? peripheral.advertisement.manufacturerData.toString('hex') : '';
         const rssi = peripheral.rssi;
 
-        if (localName === 'TestPeripheral') {
+        if (localName === 'Ticket') {
             // Check for duplicates using the UUID
             if (!peripheralsData.has(peripheral.uuid)) {
                 console.log('Peripheral discovered: ${localName} (${peripheral.uuid})');

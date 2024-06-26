@@ -1,0 +1,4 @@
+Local Name,UUID,Manufacturer Data,RSSI,is_valid
+TestPeripheral,c7bbe60612405cc2e1b8d1c75409e9b4,4c001006391eb6b52fdb,-46,True
+TestPeripheral,4ecf7eaf389b473586bc38c223ae2615,001006391eb6b,-54,True
+TestPeripheral,ad491854870048a586aa3dc49b433548,04636601006391eb6b,-70,True

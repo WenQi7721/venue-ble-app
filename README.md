@@ -53,5 +53,5 @@ This project is a BLE (Bluetooth Low Energy) application using Bleno and Noble.
 1. **Start the server**
 
    ```bash
-   node src/app.js
+   node app.js
    ```
